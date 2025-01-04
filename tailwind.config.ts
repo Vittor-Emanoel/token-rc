@@ -1,15 +1,15 @@
-import { Config } from "tailwindcss";
+import { type Config } from "tailwindcss";
 import twAnimate from "tailwindcss-animate";
 
+const content = ["./src/**/*.{js,ts,jsx,tsx}"];
+
+if (process.env.NODE_ENV === "production") {
+  content.push("!./src/**/*.stories.{js,ts,jsx,tsx}");
+}
 const config = {
   safelist: ["dark", "light"],
   darkMode: ["class"],
-  content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-  ],
+  content,
   prefix: "",
   theme: {
     container: {
