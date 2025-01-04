@@ -3,15 +3,31 @@ import { ClipboardEvent, KeyboardEvent, useRef, useState } from "react";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 
-export const InputToken = () => {
-  const [tokens, setTokens] = useState<string[]>([]);
+interface IInputTokenProps {
+  onChangeValue?: (tokens: string[]) => void;
+  tokens: string[];
+  onInputChange?: (value: string) => void;
+}
+
+export const InputToken = ({
+  onChangeValue,
+  onInputChange,
+  tokens,
+}: IInputTokenProps) => {
   const [inputValue, setInputValue] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
 
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value;
+    setInputValue(value);
+    onInputChange?.(value);
+  }
+
   function handleAddToken(token: string) {
     if (token.trim() && !tokens.includes(token)) {
-      setTokens((state) => [...state, token]);
+      const updatedTokens = [...tokens, token];
+      onChangeValue?.(updatedTokens);
     }
   }
 
@@ -35,19 +51,22 @@ export const InputToken = () => {
       .filter((token) => token.trim())
       .filter((token) => !tokens.includes(token));
 
-    setTokens((currentTokens) => [...currentTokens, ...newTokens]);
+    if (newTokens.length > 0) {
+      const updatedTokens = [...tokens, ...newTokens];
+      onChangeValue?.(updatedTokens);
+    }
   }
 
   function handleRemoveTokenOnBackspaceChange() {
     if (tokens.length > 0) {
-      const newTokens = tokens.slice(0, -1);
-      setTokens(newTokens);
+      const updatedTokens = tokens.slice(0, -1);
+      onChangeValue?.(updatedTokens);
     }
   }
 
   function handleRemoveToken(tokenIndex: number) {
-    const newTokens = tokens.filter((_, index) => index !== tokenIndex);
-    setTokens(newTokens);
+    const updatedTokens = tokens.filter((_, index) => index !== tokenIndex);
+    onChangeValue?.(updatedTokens);
   }
 
   function handleStartEditing(index: number) {
@@ -65,9 +84,9 @@ export const InputToken = () => {
     index: number
   ) {
     if (e.key === "Enter" && (e.target as HTMLInputElement).value.trim()) {
-      const newTokens = [...tokens];
-      newTokens[index] = (e.target as HTMLInputElement).value;
-      setTokens(newTokens);
+      const updatedTokens = [...tokens];
+      updatedTokens[index] = (e.target as HTMLInputElement).value;
+      onChangeValue?.(updatedTokens);
       setEditingIndex(null);
     }
 
@@ -78,45 +97,43 @@ export const InputToken = () => {
 
   return (
     <section className="w-full flex-wrap flex items-center border rounded-sm gap-1 px-2 py-1">
-      {tokens.length > 0 &&
-        tokens.map((token, index) => (
-          <div key={`${token}-${index}`} className="flex items-center">
-            {editingIndex === index ? (
-              <input
-                ref={editInputRef}
-                type="text"
-                className="h-9 px-3 rounded-full bg-primary text-primary-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-auto "
-                defaultValue={token}
-                onKeyDown={(e) => handleEditKeyDown(e, index)}
-                onBlur={() => setEditingIndex(null)}
-                aria-label={`editing-${token}`}
-                style={{ width: `${Math.max(50, token.length * 10)}px` }}
-              />
-            ) : (
-              <Badge
-                className="h-9 flex items-center gap-2 rounded-full cursor-text"
-                onDoubleClick={() => handleStartEditing(index)}
+      {tokens.map((token, index) => (
+        <div key={`${token}-${index}`} className="flex items-center">
+          {editingIndex === index ? (
+            <input
+              ref={editInputRef}
+              type="text"
+              className="h-9 px-3 rounded-full bg-primary text-primary-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-auto min-w-[50px] max-w-[200px]"
+              defaultValue={token}
+              onKeyDown={(e) => handleEditKeyDown(e, index)}
+              onBlur={() => setEditingIndex(null)}
+              aria-label={`editing-${token}`}
+            />
+          ) : (
+            <Badge
+              className="h-9 flex items-center gap-2 rounded-full cursor-text"
+              onDoubleClick={() => handleStartEditing(index)}
+            >
+              {token}
+              <button
+                aria-label={`remove-${token}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveToken(index);
+                }}
               >
-                {token}
-                <button
-                  aria-label={`remove-${token}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveToken(index);
-                  }}
-                >
-                  <Cross2Icon />
-                </button>
-              </Badge>
-            )}
-          </div>
-        ))}
+                <Cross2Icon />
+              </button>
+            </Badge>
+          )}
+        </div>
+      ))}
 
       <Input
         type="text"
         className="flex-1"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={handleInputChange}
         onKeyDown={handleAddTokenOnSubmit}
         onPaste={handlePasteTokens}
       />
