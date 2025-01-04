@@ -35,8 +35,8 @@ export function App() {
   };
 
   return (
-    <div className="w-full h-screen">
-      <div className="w-[500px] min-h-32 mx-auto text-center mt-12 space-y-2">
+    <div className="w-full h-full">
+      <div className="max-w-[500px] min-h-32 mx-auto text-center mt-12 space-y-2 px-3">
         <header>
           <h1 className="text-2xl leading-relaxed">Token</h1>
         </header>
@@ -45,6 +45,9 @@ export function App() {
           tokens={contacts}
           onChangeValue={(tokens) => setContacts(tokens)}
           onInputChange={handleInputChange}
+          styles={{
+            inputEditClassName: "bg-red-500",
+          }}
         />
 
         {suggestions.length > 0 && (

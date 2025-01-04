@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { ClipboardEvent, KeyboardEvent, useRef, useState } from "react";
 import { Badge } from "../ui/badge";
@@ -7,12 +8,19 @@ interface IInputTokenProps {
   onChangeValue?: (tokens: string[]) => void;
   tokens: string[];
   onInputChange?: (value: string) => void;
+  styles?: {
+    containerClassName?: string;
+    tagClassName?: string;
+    inputEditClassName?: string;
+    inputClassName?: string; //verificar a possibilidade do intelisense tailwind aq
+  };
 }
 
 export const InputToken = ({
   onChangeValue,
   onInputChange,
   tokens,
+  styles,
 }: IInputTokenProps) => {
   const [inputValue, setInputValue] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -96,14 +104,25 @@ export const InputToken = ({
   }
 
   return (
-    <section className="w-full flex-wrap flex items-center border rounded-sm gap-1 px-2 py-1">
+    <section
+      className={cn(
+        "w-full flex-wrap flex items-center border rounded-sm gap-1 px-2 py-1 overflow-x-hidden",
+        styles?.containerClassName
+      )}
+    >
       {tokens.map((token, index) => (
-        <div key={`${token}-${index}`} className="flex items-center">
+        <div
+          key={`${token}-${index}`}
+          className="flex items-center flex-wrap gap-2"
+        >
           {editingIndex === index ? (
             <input
               ref={editInputRef}
               type="text"
-              className="h-9 px-3 rounded-full bg-primary text-primary-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-auto min-w-[50px] max-w-[200px]"
+              className={cn(
+                "h-9 px-3 rounded-full bg-primary text-primary-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-[200px] min-w-[50px]",
+                styles?.inputEditClassName
+              )}
               defaultValue={token}
               onKeyDown={(e) => handleEditKeyDown(e, index)}
               onBlur={() => setEditingIndex(null)}
@@ -111,7 +130,10 @@ export const InputToken = ({
             />
           ) : (
             <Badge
-              className="h-9 flex items-center gap-2 rounded-full cursor-text"
+              className={cn(
+                "h-9 flex items-center gap-2 rounded-full cursor-text",
+                styles?.tagClassName
+              )}
               onDoubleClick={() => handleStartEditing(index)}
             >
               {token}
@@ -131,7 +153,10 @@ export const InputToken = ({
 
       <Input
         type="text"
-        className="flex-1"
+        className={cn(
+          "flex-1 w-full min-w-[50px] max-w-full",
+          styles?.inputClassName
+        )}
         value={inputValue}
         onChange={handleInputChange}
         onKeyDown={handleAddTokenOnSubmit}
