@@ -45,9 +45,6 @@ export function App() {
           tokens={contacts}
           onChangeValue={(tokens) => setContacts(tokens)}
           onInputChange={handleInputChange}
-          styles={{
-            inputEditClassName: "bg-red-500",
-          }}
         />
 
         {suggestions.length > 0 && (
