@@ -1,5 +1,5 @@
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { KeyboardEvent, useState } from "react";
+import { ClipboardEvent, KeyboardEvent, useState } from "react";
 import { Badge } from "./components/ui/badge";
 import { Input } from "./components/ui/input";
 
@@ -27,6 +27,18 @@ export function App() {
     if (e.key === e.key) {
       return;
     }
+  }
+
+  function handlePasteTokens(e: ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+
+    const pastedContent = e.clipboardData.getData("text");
+
+    const newTokens = pastedContent
+      .split(/[,\s]+/)
+      .filter((token) => token.trim());
+
+    setTokens((currentTokens) => [...currentTokens, ...newTokens]);
   }
 
   function handleRemoveTokenOnBackspaceChange() {
@@ -73,6 +85,7 @@ export function App() {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleAddTokenOnSubmit}
+            onPaste={handlePasteTokens}
           />
         </section>
       </div>
