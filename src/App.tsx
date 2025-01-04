@@ -1,38 +1,38 @@
 import { useState } from "react";
-import { InputToken } from "./components/Token";
+import { InputToken } from "./components/Token/components/InputToken";
+import { Token } from "./components/Token/types";
 
 export function App() {
-  const [contacts, setContacts] = useState<string[]>([]);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
 
-  const fetchContacts = (query: string) => {
-    const allContacts = [
-      "Alice Johnson",
-      "Bob Smith",
-      "Charlie Brown",
-      "Diana Prince",
-      "Edward Elric",
-    ];
-    return allContacts.filter((contact) =>
-      contact.toLowerCase().includes(query.toLowerCase())
-    );
-  };
+  // const fetchContacts = (query: string) => {
+  //   const allContacts = [
+  //     "Alice Johnson",
+  //     "Bob Smith",
+  //     "Charlie Brown",
+  //     "Diana Prince",
+  //     "Edward Elric",
+  //   ];
+  //   return allContacts.filter((contact) =>
+  //     contact.toLowerCase().includes(query.toLowerCase())
+  //   );
+  // };
 
-  const handleInputChange = (value: string) => {
-    if (value.trim()) {
-      const results = fetchContacts(value);
-      setSuggestions(results);
-    } else {
-      setSuggestions([]);
-    }
-  };
+  // const handleInputChange = (value: string) => {
+  //   if (value.trim()) {
+  //     const results = fetchContacts(value);
+  //     setSuggestions(results);
+  //   } else {
+  //     setSuggestions([]);
+  //   }
+  // };
 
-  const handleSelectSuggestion = (suggestion: string) => {
-    if (!contacts.includes(suggestion)) {
-      setContacts((prev) => [...prev, suggestion]);
-    }
-    setSuggestions([]);
-  };
+  // const handleSelectSuggestion = (suggestion: string) => {
+  //   if (!contacts.includes(suggestion)) {
+  //     setContacts((prev) => [...prev, suggestion]);
+  //   }
+  //   setSuggestions([]);
+  // };
 
   return (
     <div className="w-full h-full">
@@ -42,11 +42,17 @@ export function App() {
         </header>
 
         <InputToken
-          tokens={contacts}
-          onChangeValue={(tokens) => setContacts(tokens)}
-          onInputChange={handleInputChange}
+          tokens={tokens}
+          onChangeValue={setTokens}
+          onInputChange={console.log}
+          styles={{
+            containerClassName: "custom-container",
+            tagClassName: "custom-tag",
+          }}
         />
 
+        {/*
+          implementar o select
         {suggestions.length > 0 && (
           <ul className="bg-white border rounded shadow-md mt-2">
             {suggestions.map((suggestion) => (
@@ -59,7 +65,7 @@ export function App() {
               </li>
             ))}
           </ul>
-        )}
+        )} */}
       </div>
     </div>
   );
